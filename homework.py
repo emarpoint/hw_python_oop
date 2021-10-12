@@ -11,11 +11,13 @@ class Calculator:
         self.records.append(expenses)
 
     def get_today_stats(self):
-        expens_today = []
-        for item in self.records:
-            if item.date == self.date_today:
-                expens_today.append(item.amount)
-        return sum(expens_today)
+        # expens_today = []
+        # for item in self.records:
+        #     if item.date == self.date_today:
+        #         expens_today.append(item.amount)
+        # return sum(expens_today)
+        # Ниже привиден метод  list comprehension новый_список = [«операция» for «элемент списка» in «список» if «условие»]
+        return sum([item.amount for item in self.records if item.date == self.date_today])
 
     def get_today_remaind(self):
         today_remaind = self.limit - self.get_today_stats()
