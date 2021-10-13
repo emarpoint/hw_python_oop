@@ -6,33 +6,25 @@ class Calculator:
         self.limit = limit
         self.records = []
         self.date_today = dt.date.today()
+        self.one_week = dt.date.today() - dt.timedelta(days=7)
 
     def add_record(self, expenses):
         self.records.append(expenses)
 
     def get_today_stats(self):
-        # expens_today = []
-        # for item in self.records:
-        #     if item.date == self.date_today:
-        #         expens_today.append(item.amount)
-        # return sum(expens_today)
         # Ниже привиден метод  'list comprehension'
         # новый_список = [«операция» for «элемент списка»
         # in «список» if «условие»]
-        return sum([item.amount for item in self.records
-                    if item.date == self.date_today])
+        return sum(item.amount for item in self.records
+                   if item.date == self.date_today)
 
     def get_today_remaind(self):
         today_remaind = self.limit - self.get_today_stats()
         return today_remaind
 
     def get_week_stats(self):
-        week_stats = []
-        one_week = dt.date.today() - dt.timedelta(days=7)
-        for item in self.records:
-            if one_week <= item.date <= self.date_today:
-                week_stats.append(item.amount)
-        return sum(week_stats)
+        return sum(item.amount for item in self.records
+                   if self.one_week <= item.date <= self.date_today)
 
 
 class CaloriesCalculator(Calculator):
@@ -52,21 +44,27 @@ class CashCalculator(Calculator):
     USD_RATE = 60.0
 
     def get_today_cash_remained(self, currency):
+
         currency_dict = {
             'rub': [self.RUB_RATE, 'руб'],
             'usd': [self.USD_RATE, 'USD'],
             'eur': [self.EURO_RATE, 'Euro']
         }
         limit_remained = self.get_today_remaind()
+
+        if currency not in currency_dict:
+            return 'Запрашиваемой валюты нет.'
+
         value, cur_name = currency_dict.get(currency)
-        convert_maney = round(limit_remained / value, 2)
+
         if limit_remained == 0:
             return 'Денег нет, держись'
-        elif limit_remained > 0:
+
+        convert_maney = round(limit_remained / value, 2)
+
+        if limit_remained > 0:
             return ('На сегодня осталось'
                     f' {convert_maney} {cur_name}')
-        elif currency not in currency_dict:
-            return 'Запрашиваемой валюты нет.'
         else:
             convert_maney = abs(convert_maney)
             return ('Денег нет, держись: твой долг - '
